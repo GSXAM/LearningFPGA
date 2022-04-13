@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @GSXAM.
+- 👋 Hi, I’m Lương Công Đức (@GSXAM).
 - 👀 I’m interested in IC design and electronic circuit design.
 - 🌱 I’m currently learning electronic and telecommunication.
 - 💞️ I’m looking to collaborate on ...
