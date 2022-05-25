@@ -1,6 +1,6 @@
 This is a Readme_tb.txt file.
 ------------------------------------------------------------------
-// IF YOU DOWNLOAD AND RUN MY DEMO, PLEASE SKIP STEP1 AND STEP2 //
+// IF YOU DOWNLOAD AND RUN MY DEMO, PLEASE DO ONLY STEP3 //
 ------------------------------------------------------------------
 
 
