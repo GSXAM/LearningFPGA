@@ -15,5 +15,3 @@ This is a Readme_tb.txt file.
 + Step 4: import file testbench in directory "TB_src", then run simulation with time duration: 50us
 
 --- end! ---
-
-[link](https://banviencorp-my.sharepoint.com/:o:/g/personal/duc_luong-cong_banvien_com_vn/EkVqgLHbTmhFvCEw-U8InGgB5TVm0ndnwS1BaKQuk7pP5A?e=bedSSP)
