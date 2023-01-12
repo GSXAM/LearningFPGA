@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2020.1 (64-bit)
+# SW Build 2902540 on Wed May 27 19:54:49 MDT 2020
+# IP Build 2902112 on Wed May 27 22:43:36 MDT 2020
+# Start of session at: Sat Apr 23 14:55:55 2022
+# Process ID: 11292
+# Current directory: D:/VHDL/Basys3_18N39/Hex2Led/Hex2Led.runs/synth_1
+# Command line: vivado.exe -log hex2led.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source hex2led.tcl
+# Log file: D:/VHDL/Basys3_18N39/Hex2Led/Hex2Led.runs/synth_1/hex2led.vds
+# Journal file: D:/VHDL/Basys3_18N39/Hex2Led/Hex2Led.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source hex2led.tcl -notrace

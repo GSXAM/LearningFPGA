@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2020.1 (64-bit)
+# SW Build 2902540 on Wed May 27 19:54:49 MDT 2020
+# IP Build 2902112 on Wed May 27 22:43:36 MDT 2020
+# Start of session at: Sat Apr 23 16:16:40 2022
+# Process ID: 14584
+# Current directory: D:/VHDL/Basys3_18N39/Mux2to1_4bit/Mux2to1_4bit.runs/synth_1
+# Command line: vivado.exe -log Mux2to1_4bit.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source Mux2to1_4bit.tcl
+# Log file: D:/VHDL/Basys3_18N39/Mux2to1_4bit/Mux2to1_4bit.runs/synth_1/Mux2to1_4bit.vds
+# Journal file: D:/VHDL/Basys3_18N39/Mux2to1_4bit/Mux2to1_4bit.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source Mux2to1_4bit.tcl -notrace

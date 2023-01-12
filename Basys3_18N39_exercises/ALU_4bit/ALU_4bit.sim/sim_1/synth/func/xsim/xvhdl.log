@@ -1,0 +1,4 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/VHDL/Basys3_18N39/ALU_4bit/ALU_4bit.sim/sim_1/synth/func/xsim/tb_ALU_func_synth.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'ALU_4bit'
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/VHDL/Basys3_18N39/ALU_4bit/ALU_4bit.srcs/sim_1/new/tb_ALU.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'tb_ALU'
