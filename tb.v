@@ -60,10 +60,17 @@ module tmds_encode_dvi_tb();
         de = 0;
         #20 de=1;
         // $display("Data:\tdvi:\t\tsvo:\t\tHDMI:\t\tTMDS_my:");
-        for (i = 0; i<10; i=i+1) begin
+        for (i = 0; i<255; i=i+1) begin
             data=i; #10;
             // $display("%d\t%h\t\t%h\t\t%h\t\t%h", data, tmds_dvi, tmds_svo, tmds_HDMI, tmds_m);
+            if ((tmds_dvi ^ tmds_svo ^ tmds_HDMI ^ tmds_m) == 10'd0) begin
+                $display("*********** PASS ***********\n");
+            end
+            else begin
+                $display("*********** FAIL **********\n");
+            end
         end
+        $display("*********** PASS ***********\n");
         $finish;
     end
 

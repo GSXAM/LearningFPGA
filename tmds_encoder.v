@@ -270,11 +270,11 @@ module my_tmds_encoder (
 );
 	reg signed [4:0] cnt_pre =5'd0; // cnt(t-1). 5bit signed range: -16 to 15
 
-	wire [3:0] N1_D = D[7] + D[6] + D[5] + D[4] + D[3] + D[2] + D[1] + D[0];
+	wire [4:0] N1_D = D[7] + D[6] + D[5] + D[4] + D[3] + D[2] + D[1] + D[0];
 	wire [8:0] q_m = ((N1_D>4'd4) || (N1_D==4'd4 && D[0]==1'b0)) ? {1'b0, q_m[6:0] ^~ D[7:1], D[0]} : {1'b1, q_m[6:0] ^ D[7:1], D[0]};
-	wire [3:0] N0_qm = ~q_m[7] + ~q_m[6] + ~q_m[5] + ~q_m[4] + ~q_m[3] + ~q_m[2] + ~q_m[1] + ~q_m[0];
-	wire [3:0] N1_qm = q_m[7] + q_m[6] + q_m[5] + q_m[4] + q_m[3] + q_m[2] + q_m[1] + q_m[0];
-	wire [4:0] diff = N1_qm - N0_qm;
+	wire signed [4:0] N0_qm = ~q_m[7] + ~q_m[6] + ~q_m[5] + ~q_m[4] + ~q_m[3] + ~q_m[2] + ~q_m[1] + ~q_m[0];
+	wire signed [4:0] N1_qm = q_m[7] + q_m[6] + q_m[5] + q_m[4] + q_m[3] + q_m[2] + q_m[1] + q_m[0];
+	wire signed [4:0] diff = N1_qm - 5'd4;
 	wire balance = (cnt_pre==0 || diff==0);
 	wire equal = ((cnt_pre>0 && diff>0) || (cnt_pre<0 && diff<0));
 	wire [9:0] tmds_out = balance ? {~q_m[8], q_m[8], (q_m[8] ? q_m[7:0] : ~q_m[7:0])} : {equal, q_m[8], q_m[7:0]^{8{equal}}};
