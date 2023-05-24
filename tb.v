@@ -13,7 +13,7 @@ module tmds_encode_dvi_tb();
     reg [7:0] data;
     reg [1:0] ctrl;
     reg de;
-    wire [9:0] tmds_dvi, tmds_svo, tmds_HDMI;
+    wire [9:0] tmds_dvi, tmds_svo, tmds_HDMI, tmds_m;
     reg [7:0] i;
 
     tmds_encoder_dvi tmds_test1(
@@ -42,6 +42,15 @@ module tmds_encode_dvi_tb();
         .TMDS(tmds_HDMI)
     );
 
+    my_tmds_encoder tmds_my(
+        .clk(clk),
+        .rst(rst),
+        .DE(de),
+        .CD(ctrl),
+        .D(data),
+        .q_out(tmds_m)
+    );
+
     initial begin
         rst=1;
         clk = 0;
@@ -50,10 +59,10 @@ module tmds_encode_dvi_tb();
         i=0;
         de = 0;
         #20 de=1;
-        $display("Data:\tdvi:\t\t\tsvo:\t\t\tHDMI:");
+        // $display("Data:\tdvi:\t\tsvo:\t\tHDMI:\t\tTMDS_my:");
         for (i = 0; i<10; i=i+1) begin
             data=i; #10;
-            $display("%d\t%b\t\t%b\t\t%b", data, tmds_dvi, tmds_svo, tmds_HDMI);
+            // $display("%d\t%h\t\t%h\t\t%h\t\t%h", data, tmds_dvi, tmds_svo, tmds_HDMI, tmds_m);
         end
         $finish;
     end

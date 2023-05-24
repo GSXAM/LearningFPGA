@@ -91,6 +91,7 @@ module tmds_encoder_dvi(
                 bias <= bias - {3'b0, ~enc_qm[8], 1'b0} + balance;
             end
         end
+		$display("dvi-D:%d\tq_m:%h\tq_out:%h\tcnt_pre:%d", i_data, enc_qm, o_tmds, bias);
     end
 endmodule
 
@@ -228,6 +229,7 @@ module svo_tmds (
 			cnt   <= cnt_next;
 			dout <= q_out_next;
 		end
+		$display("svo-D:%d\tq_m:%h\tq_out:%h\tcnt_pre:%d", D, q_m, dout, cnt);
 	end
 endmodule
 
@@ -256,7 +258,37 @@ wire [9:0] TMDS_code = CD[1] ? (CD[0] ? 10'b1010101011 : 10'b0101010100) : (CD[0
 
 always @(posedge clk) TMDS <= VDE ? TMDS_data : TMDS_code;
 always @(posedge clk) balance_acc <= VDE ? balance_acc_new : 4'h0;
+always @(posedge clk) $display("HDMI-D:%d\tq_m:%h\tq_out:%h\tcnt_pre:%d", VD, q_m, TMDS, balance_acc);
 endmodule
 
 
+module my_tmds_encoder (
+	input clk, rst, DE,
+	input [1:0] CD, // C1 = Vsyn, C0 = Hsyn
+	input [7:0] D,
+	output reg [9:0] q_out = 10'd0
+);
+	reg signed [4:0] cnt_pre =5'd0; // cnt(t-1). 5bit signed range: -16 to 15
 
+	wire [3:0] N1_D = D[7] + D[6] + D[5] + D[4] + D[3] + D[2] + D[1] + D[0];
+	wire [8:0] q_m = ((N1_D>4'd4) || (N1_D==4'd4 && D[0]==1'b0)) ? {1'b0, q_m[6:0] ^~ D[7:1], D[0]} : {1'b1, q_m[6:0] ^ D[7:1], D[0]};
+	wire [3:0] N0_qm = ~q_m[7] + ~q_m[6] + ~q_m[5] + ~q_m[4] + ~q_m[3] + ~q_m[2] + ~q_m[1] + ~q_m[0];
+	wire [3:0] N1_qm = q_m[7] + q_m[6] + q_m[5] + q_m[4] + q_m[3] + q_m[2] + q_m[1] + q_m[0];
+	wire [4:0] diff = N1_qm - N0_qm;
+	wire balance = (cnt_pre==0 || diff==0);
+	wire equal = ((cnt_pre>0 && diff>0) || (cnt_pre<0 && diff<0));
+	wire [9:0] tmds_out = balance ? {~q_m[8], q_m[8], (q_m[8] ? q_m[7:0] : ~q_m[7:0])} : {equal, q_m[8], q_m[7:0]^{8{equal}}};
+	wire signed [4:0] cnt = balance ? (q_m[8] ? (cnt_pre + diff) : (cnt_pre - diff)) : (equal ? (cnt_pre + {3'b000, q_m[8], 1'b0} - diff) : (cnt_pre + {3'b000, ~q_m[8], 1'b0} + diff));
+	always @(posedge clk, rst) begin
+		if(!rst) begin
+			q_out <= 10'd0;
+			cnt_pre <= 5'd0;
+		end
+		else begin
+			q_out <= (DE ? tmds_out : (CD[1] ? (CD[0] ? 10'b1010101011 : 10'b0101010100) : (CD[0] ? 10'b0010101011 : 10'b1101010100)));
+			cnt_pre <= (DE ? cnt : 5'd0);
+		end
+		$display("MY-D:%d\tq_m:%h\tq_out:%h\tcnt_pre:%d", D, q_m, q_out, cnt_pre);
+	end
+
+endmodule
