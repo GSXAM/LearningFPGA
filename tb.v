@@ -1,11 +1,9 @@
 `timescale 1ns / 1ps
-`default_nettype none
-`include "tmds_encoder.v"
-// Project F: Display DVI TMDS Encoder Test Bench
-// (C)2019 Will Green, Open source hardware released under the MIT License
-// Learn more at https://projectf.io
+// `include "tmds_encoder.v"
+`include "temp.v"
 
-module tmds_encode_dvi_tb();
+
+/* module tmds_encode_dvi_tb();
 
     reg rst;
     reg clk;
@@ -76,5 +74,41 @@ module tmds_encode_dvi_tb();
 
     always
        #5 clk = ~clk;
+endmodule */
 
+module tb_HDMI ();
+	reg pixclk;  // 25MHz
+	reg clk_TMDS;	// 250Mhz
+	wire [2:0] TMDSp;/* TMDSn,*/
+	wire TMDSp_clock;/*, TMDSn_clock*/
+
+    reg [3:0] cnt = 0;
+
+    always #2 clk_TMDS <= ~clk_TMDS;
+    always @(posedge clk_TMDS) begin
+        if (cnt == 4'd4) begin
+            cnt <= 0;
+        end
+        else begin
+            cnt <= cnt + 4'd1;
+        end
+
+        if (cnt == 4'd4) begin
+            pixclk <= ~pixclk;
+        end
+        $display("cnt: %d", cnt);
+    end
+    always @(TMDSp) begin
+        $display("Bit red: %b\tBit green:%b\tBit blue:%b", TMDSp[2], TMDSp[1], TMDSp[0]);
+    end
+
+    HDMI_test UUT(.pixclk(pixclk), .clk_TMDS(clk_TMDS), .TMDSp(TMDSp), .TMDSp_clock(TMDSp_clock));
+
+    initial begin
+        pixclk = 0;
+        clk_TMDS = 0;
+        $dumpfile("wave.vcd");
+        $dumpvars(0, tb_HDMI);
+        #1000 $finish;
+    end
 endmodule

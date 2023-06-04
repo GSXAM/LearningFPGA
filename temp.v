@@ -3,13 +3,14 @@
 ////////////////////////////////////////////////////////////////////////
 module HDMI_test(
 	input pixclk,  // 25MHz
-	output [2:0] TMDSp, TMDSn,
-	output TMDSp_clock, TMDSn_clock
+	input clk_TMDS,	// 250Mhz
+	output [2:0] TMDSp,/* TMDSn,*/
+	output TMDSp_clock/*, TMDSn_clock*/
 );
 
 ////////////////////////////////////////////////////////////////////////
 reg [9:0] CounterX=0, CounterY=0;
-reg hSync, vSync, DrawArea;
+reg hSync=0, vSync=0, DrawArea=0;
 always @(posedge pixclk) DrawArea <= (CounterX<640) && (CounterY<480);
 
 always @(posedge pixclk) CounterX <= (CounterX==799) ? 0 : CounterX+1;
@@ -21,7 +22,7 @@ always @(posedge pixclk) vSync <= (CounterY>=490) && (CounterY<492);
 ////////////////
 wire [7:0] W = {8{CounterX[7:0]==CounterY[7:0]}};
 wire [7:0] A = {8{CounterX[7:5]==3'h2 && CounterY[7:5]==3'h2}};
-reg [7:0] red, green, blue;
+reg [7:0] red=0, green=0, blue=0;
 always @(posedge pixclk) red <= ({CounterX[5:0] & {6{CounterY[4:3]==~CounterX[4:3]}}, 2'b00} | W) & ~A;
 always @(posedge pixclk) green <= (CounterX[7:0] & {8{CounterY[6]}} | W) & ~A;
 always @(posedge pixclk) blue <= CounterY[7:0] | W | A;
@@ -31,11 +32,12 @@ wire [9:0] TMDS_red, TMDS_green, TMDS_blue;
 TMDS_encoder encode_R(.clk(pixclk), .VD(red  ), .CD(2'b00)        , .VDE(DrawArea), .TMDS(TMDS_red));
 TMDS_encoder encode_G(.clk(pixclk), .VD(green), .CD(2'b00)        , .VDE(DrawArea), .TMDS(TMDS_green));
 TMDS_encoder encode_B(.clk(pixclk), .VD(blue ), .CD({vSync,hSync}), .VDE(DrawArea), .TMDS(TMDS_blue));
+always @(posedge pixclk) $display("\nNew pixel data\nRed: %b\tGreen: %b\t Blue: %b", TMDS_red, TMDS_green, TMDS_blue);
 
 ////////////////////////////////////////////////////////////////////////
-wire clk_TMDS, DCM_TMDS_CLKFX;  // 25MHz x 10 = 250MHz
-DCM_SP #(.CLKFX_MULTIPLY(10)) DCM_TMDS_inst(.CLKIN(pixclk), .CLKFX(DCM_TMDS_CLKFX), .RST(1'b0));
-BUFG BUFG_TMDSp(.I(DCM_TMDS_CLKFX), .O(clk_TMDS));
+// wire clk_TMDS, DCM_TMDS_CLKFX;  // 25MHz x 10 = 250MHz
+// DCM_SP #(.CLKFX_MULTIPLY(10)) DCM_TMDS_inst(.CLKIN(pixclk), .CLKFX(DCM_TMDS_CLKFX), .RST(1'b0));
+// BUFG BUFG_TMDSp(.I(DCM_TMDS_CLKFX), .O(clk_TMDS));
 
 ////////////////////////////////////////////////////////////////////////
 reg [3:0] TMDS_mod10=0;  // modulus 10 counter
@@ -51,10 +53,14 @@ begin
 	TMDS_mod10 <= (TMDS_mod10==4'd9) ? 4'd0 : TMDS_mod10+4'd1;
 end
 
-OBUFDS OBUFDS_red  (.I(TMDS_shift_red  [0]), .O(TMDSp[2]), .OB(TMDSn[2]));
-OBUFDS OBUFDS_green(.I(TMDS_shift_green[0]), .O(TMDSp[1]), .OB(TMDSn[1]));
-OBUFDS OBUFDS_blue (.I(TMDS_shift_blue [0]), .O(TMDSp[0]), .OB(TMDSn[0]));
-OBUFDS OBUFDS_clock(.I(pixclk), .O(TMDSp_clock), .OB(TMDSn_clock));
+// OBUFDS OBUFDS_red  (.I(TMDS_shift_red  [0]), .O(TMDSp[2]), .OB(TMDSn[2]));
+// OBUFDS OBUFDS_green(.I(TMDS_shift_green[0]), .O(TMDSp[1]), .OB(TMDSn[1]));
+// OBUFDS OBUFDS_blue (.I(TMDS_shift_blue [0]), .O(TMDSp[0]), .OB(TMDSn[0]));
+// OBUFDS OBUFDS_clock(.I(pixclk), .O(TMDSp_clock), .OB(TMDSn_clock));
+assign TMDSp[0] = TMDS_shift_blue[0];
+assign TMDSp[1] = TMDS_shift_green[0];
+assign TMDSp[2] = TMDS_shift_red[0];
+assign TMDSp_clock = pixclk;
 endmodule
 
 
