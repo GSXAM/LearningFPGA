@@ -2,8 +2,8 @@
 // `include "tmds_encoder.v"
 `include "temp.v"
 
-
-/* module tmds_encode_dvi_tb();
+/*
+module tmds_encode_dvi_tb();
 
     reg rst;
     reg clk;
@@ -11,17 +11,8 @@
     reg [7:0] data;
     reg [1:0] ctrl;
     reg de;
-    wire [9:0] tmds_dvi, tmds_svo, tmds_HDMI, tmds_m;
+    wire [9:0] tmds_svo, tmds_m;
     reg [7:0] i;
-
-    tmds_encoder_dvi tmds_test1(
-        .i_clk(clk),
-        .i_rst(rst),
-        .i_data(data),
-        .i_ctrl(ctrl),
-        .i_de(de),
-        .o_tmds(tmds_dvi)
-    );
 
     svo_tmds tmds_test2(
         .clk(clk),
@@ -30,14 +21,6 @@
         .ctrl(ctrl),
         .din(data),
         .dout(tmds_svo)
-    );
-
-    TMDS_encoder tmds_test3(
-        .clk(clk),
-        .VD(data),
-        .CD(ctrl),
-        .VDE(de),
-        .TMDS(tmds_HDMI)
     );
 
     my_tmds_encoder tmds_my(
@@ -50,6 +33,8 @@
     );
 
     initial begin
+        $dumpfile("wave.vcd");
+        $dumpvars(0, tmds_encode_dvi_tb);
         rst=1;
         clk = 0;
         ctrl = 0;
@@ -58,29 +43,30 @@
         de = 0;
         #20 de=1;
         // $display("Data:\tdvi:\t\tsvo:\t\tHDMI:\t\tTMDS_my:");
-        for (i = 0; i<25; i=i+1) begin
-            data=i; #10;
+        for (i = 0; i<10; i=i+1) begin
+            data=0; #10;
             // $display("%d\t%h\t\t%h\t\t%h\t\t%h", data, tmds_dvi, tmds_svo, tmds_HDMI, tmds_m);
-            if ((tmds_dvi ^ tmds_svo ^ tmds_HDMI ^ tmds_m) == 10'd0) begin
+            if ((tmds_svo ^ tmds_m) == 10'd0) begin
                 $display("*********** PASS ***********\n");
             end
             else begin
                 $display("*********** FAIL **********\n");
             end
         end
-        $display("*********** PASS ***********\n");
+        $display("*********** END ***********\n");
         $finish;
     end
 
     always
        #5 clk = ~clk;
-endmodule */
+endmodule
+*/
 
 module tb_HDMI ();
 	reg pixclk;  // 25MHz
 	reg clk_TMDS;	// 250Mhz
-	wire [2:0] TMDSp;/* TMDSn,*/
-	wire TMDSp_clock;/*, TMDSn_clock*/
+	wire [2:0] TMDSp_svo, TMDSp_my;/* TMDSn,*/
+	wire TMDSp_clock_svo, TMDSp_clock_my;/*, TMDSn_clock*/
 
     reg [3:0] cnt = 0;
 
@@ -96,13 +82,15 @@ module tb_HDMI ();
         if (cnt == 4'd4) begin
             pixclk <= ~pixclk;
         end
-        $display("cnt: %d", cnt);
+        // $display("cnt: %d", cnt);
     end
-    always @(TMDSp) begin
-        $display("Bit red: %b\tBit green:%b\tBit blue:%b", TMDSp[2], TMDSp[1], TMDSp[0]);
+    always @(TMDSp_svo, TMDSp_my) begin
+        $display("MY : Red:%b\tGreen:%b\tBlue:%b", TMDSp_my[2] , TMDSp_my[1] , TMDSp_my[0]) ;
+        $display("SVO: Red:%b\tGreen:%b\tBlue:%b", TMDSp_svo[2], TMDSp_svo[1], TMDSp_svo[0]);
     end
 
-    HDMI_test UUT(.pixclk(pixclk), .clk_TMDS(clk_TMDS), .TMDSp(TMDSp), .TMDSp_clock(TMDSp_clock));
+    HDMI_svo SVO(.pixclk(pixclk), .clk_TMDS(clk_TMDS), .TMDSp(TMDSp_svo), .TMDSp_clock(TMDSp_clock_svo));
+    HDMI_my  MY (.pixclk(pixclk), .clk_TMDS(clk_TMDS), .TMDSp(TMDSp_my) , .TMDSp_clock(TMDSp_clock_my)) ;
 
     initial begin
         pixclk = 0;
