@@ -15,39 +15,29 @@
  *  Clock TMDS: 25.2Mhz x 10bit = 252Mhz
 */
 
-module my_hdmi (
-    // input clk_in,                   // 27Mhz
+module my_hdmi(
+    input clk_in,                   // 27Mhz, but now this signal is tmds_bit_clk 252Mhz
     input rst_in,                   // Reset button
     input btn,                      // Button to change video data signal
-    output tmds_clk = 0,            // TMDS clock P
-    output [2:0] tmds_out = 0       // TMDS shiftout RGB
+    output reg pixel_clk,           // Pixel clock output 25.2Mhz
+    output reg [2:0] tmds_out       // TMDS shiftout RGB
 );
-    /* PLL clk_in: 27Mhz ==> TMDS clock: 252Mhz
-     * TMDS clock / 10 = Pixel clock: 25.2Mhz
+    /* PLL clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
+     * TMDS bit clock / 10 = Pixel clock: 25.2Mhz
     */
-    reg pixel_clk = 0;          // Pixel clock 25.2Mhz
-    reg cnt_div [2:0] = 0;      // Counter for clock divider
-    /* Modeling 252Mhz PLL clock */
-    always begin
-        if (rst_in == 0)
-            tmds_clk = 0;
-        else
-            #2 tmds_clk = ~tmds_clk;
-    end
+    reg [2:0] cnt_div = 3'h0;      // Counter for clock divider
     /* Pixel clock devider */
-    always @(rst_in, tmds_clk) begin
-        if (negedge rst_in) begin
-            pixel_clk = 0;
-            cnt_div = 0;
+    always @(posedge clk_in) begin
+        if(rst_in != 1) begin
+            pixel_clk <= 0;
+            cnt_div <= 3'h0;
         end
-        else if (posedge tmds_clk) begin
-            if (cnt_div == 3'd4) begin
-                pixel_clk <= ~pixel_clk;
-                cnt_div <= 0;
-            end
-            else
-                cnt_div <= cnt_div + 1;
+        else if (cnt_div == 3'd4) begin
+            pixel_clk <= ~pixel_clk;
+            cnt_div <= 3'h0;
         end
+        else
+            cnt_div <= cnt_div + 1;
     end
 
     /* Data prepare

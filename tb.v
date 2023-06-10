@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 // `include "tmds_encoder.v"
-`include "temp.v"
+// `include "temp.v"
+`include "HDMI.v"
 
 /*
 module tmds_encode_dvi_tb();
@@ -62,11 +63,12 @@ module tmds_encode_dvi_tb();
 endmodule
 */
 
+/*
 module tb_HDMI ();
 	reg pixclk;  // 25MHz
 	reg clk_TMDS;	// 250Mhz
-	wire [2:0] TMDSp_svo, TMDSp_my;/* TMDSn,*/
-	wire TMDSp_clock_svo, TMDSp_clock_my;/*, TMDSn_clock*/
+	wire [2:0] TMDSp_svo, TMDSp_my;
+	wire TMDSp_clock_svo, TMDSp_clock_my;
 
     reg [3:0] cnt = 0;
 
@@ -98,5 +100,32 @@ module tb_HDMI ();
         $dumpfile("wave.vcd");
         $dumpvars(0, tb_HDMI);
         #1000 $finish;
+    end
+endmodule
+*/
+
+module tb_my_HDMI();
+    reg tmds_clk;             // 27Mhz, but now this signal is tmds_bit_clk 252Mhz
+    reg rst_in;             // Reset button
+    reg btn;                // Button to change video data signal
+    wire pixel_clk;         // Pixel clock output 25.2Mhz
+    wire [2:0] tmds_out;    // TMDS shiftout RGB
+
+    my_hdmi clock_UT(.clk_in(tmds_clk), .rst_in(rst_in), .btn(btn), .pixel_clk(pixel_clk), .tmds_out(tmds_out));
+
+    initial begin
+        $dumpfile("wave.vcd");
+        $dumpvars(0, tb_my_HDMI);
+        tmds_clk = 0;
+        rst_in = 0;
+        btn = 1;
+        #100 rst_in = 1;
+        #10 rst_in = 0;
+        #100 $finish;
+    end
+
+    /* Modeling 252Mhz PLL internal clock */
+    always begin
+        #2 tmds_clk <= ~tmds_clk;
     end
 endmodule
