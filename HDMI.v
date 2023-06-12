@@ -32,13 +32,13 @@ module my_hdmi(
     parameter V_front_porch      = 10;
     parameter total_pixel_x      = (pixel_x + H_back_porch + H_retrace + H_front_porch);
     parameter total_pixel_y      = (pixel_y + V_back_porch + V_retrace + V_front_porch);
-    /* PLL clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
+
+    /* Pixel clock devider. Generate tmds_clk (or pixel clock) 25.2Mhz
+     * PLL clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
      * TMDS bit clock / 10 = Pixel clock: 25.2Mhz
     */
     reg [2:0] cnt_div = 4'd4;      // Counter for clock divider
     wire tmds_bit_clk = clk_in;  // Change 27Mhz clk_in to tmds_bit_clk for simulation
-    
-    /* Pixel clock devider. Generate tmds_clk (or pixel clock) 25.2Mhz */
     always @(posedge tmds_bit_clk, negedge rst_in) begin
         if(rst_in == 0) begin
             tmds_clk <= 0;
@@ -60,26 +60,34 @@ module my_hdmi(
     reg [9:0] cnt_y = 0;
     reg Hsyn = 0;
     reg Vsyn = 0;
-    always @(posedge tmds_bit_clk, negedge rst_in) begin // Counter_X
-        if(rst_in == 0) cnt_x <= 0;
+    reg DataArea = 0;
+    always @(posedge tmds_clk, negedge rst_in) begin // Counter_X
+        if(rst_in == 0) cnt_x <= (total_pixel_x -1);
         else if(cnt_x == (total_pixel_x - 1)) cnt_x <= 0;
         else cnt_x <= cnt_x + 1;
     end
-    always @(posedge tmds_bit_clk, rst_in, negedge rst_in) begin // Counter_Y
-        if(rst_in == 0) cnt_y <= 0;
+    always @(posedge tmds_clk, negedge rst_in) begin // Counter_Y
+        if(rst_in == 0) cnt_y <= (total_pixel_y - 1);
         else if(cnt_x == (total_pixel_x - 1)) begin
             if(cnt_y == (total_pixel_y - 1)) cnt_y <= 0;
             else cnt_y <= cnt_y + 1;
         end
     end
-    // always @(posedge tmds_bit_clk, rst_in) begin // Hsyn
-    //     if((cnt_x >= (pixel_x + H_back_porch)) && (cnt_x < (pixel_x + H_back_porch + H_retrace))) Hsyn <= 1;
-    //     else Hsyn <= 0;
-    // end
-    // always @(posedge tmds_bit_clk, rst_in) begin // Vsyn
-    //     if((cnt_y >= (pixel_y + V_back_porch)) && (cnt_y < (pixel_y + V_back_porch + V_retrace))) Vsyn <= 1;
-    //     else Vsyn <= 0;
-    // end
+    always @(posedge tmds_clk, negedge rst_in) begin // Hsyn
+        if(rst_in == 0) Hsyn <= 0;
+        else if((cnt_x >= (pixel_x + H_back_porch - 1)) && (cnt_x < (pixel_x + H_back_porch + H_retrace - 1))) Hsyn <= 1;
+        else Hsyn <= 0;
+    end
+    always @(posedge tmds_clk, negedge rst_in) begin // Vsyn
+        if(rst_in == 0) Vsyn <= 0;
+        else if((cnt_y >= (pixel_y + V_back_porch - 1)) && (cnt_y < (pixel_y + V_back_porch + V_retrace - 1))) Vsyn <= 1;
+        else Vsyn <= 0;
+    end
+    always @(posedge tmds_clk, negedge rst_in) begin // DataArea
+        if(rst_in == 0) DataArea <= 0;
+        else if(((cnt_x < (pixel_x - 1))) && ((cnt_y < (pixel_y - 1)))) DataArea <= 1;
+        else DataArea <= 0;
+    end
 
 
     /* Data prepare

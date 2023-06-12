@@ -121,13 +121,18 @@ module tb_my_HDMI();
 
     initial begin
         $dumpfile("wave.vcd");
-        $dumpvars(0, tb_my_HDMI);
+        $dumpvars(0, tb_my_HDMI.clock_UT);
         tmds_bit_clk = 0;
         rst_in = 1;
         btn = 1;
         #85 rst_in = 0;
         #20 rst_in = 1;
-        #100 $finish;
+        #17000000 $finish;
+    end
+
+    initial begin
+        $dumpoff;
+        #15000000 $dumpon;
     end
 
     /* Modeling 252Mhz PLL internal clock */
