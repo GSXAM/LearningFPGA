@@ -130,10 +130,10 @@ module tb_my_HDMI();
         #17000000 $finish;
     end
 
-    initial begin
-        $dumpoff;
-        #15000000 $dumpon;
-    end
+    // initial begin
+    //     #200 $dumpoff;
+    //     #16000000 $dumpon;
+    // end
 
     /* Modeling 252Mhz PLL internal clock */
     always begin
