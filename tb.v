@@ -127,6 +127,8 @@ module tb_my_HDMI();
         btn = 1;
         #85 rst_in = 0;
         #20 rst_in = 1;
+        #100 btn = 0;
+        #10000 btn = 1;
         #17000000 $finish;
     end
 
