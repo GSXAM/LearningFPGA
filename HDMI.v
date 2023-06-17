@@ -103,7 +103,7 @@ module my_hdmi(
      *      + Press button  : send data like @fpga4fun page
      *      + Release button: color change (default)
     */
-    reg [21:0] cnt4M = 0;
+    reg [16:0] cnt_data = 0; // 17-bit
     reg [7:0] red = 8'hFF;
     reg [7:0] green = 0;
     reg [7:0] blue = 0;
@@ -111,10 +111,10 @@ module my_hdmi(
     wire [7:0] A = {8{(cnt_x[7:5] == 3'h2) && (cnt_y[7:5] == 3'h2)}};
 
     always @(posedge tmds_clk, negedge rst_in) begin
-        if (rst_in == 0 || btn == 0) cnt4M <= 0;
-        else cnt4M <= cnt4M + 1;
+        if (rst_in == 0 || btn == 0) cnt_data <= 0;
+        else cnt_data <= cnt_data + 1;
     end
-    always @(posedge tmds_clk) begin
+    always @(posedge tmds_clk, negedge rst_in) begin
         if(rst_in == 0) begin
             red   <= 8'hFF;
             green <= 0;
@@ -127,7 +127,7 @@ module my_hdmi(
                 blue  <= cnt_y[7:0] | W | A;
             end
             else begin
-                if (cnt4M == 0) begin
+                if (cnt_data == 0) begin
                     if ((red == 8'hFF) && (green < 8'hFF) && (blue == 0)) green <= green + 1;       // Green increase   --> Red to Yellow
                     else if ((red > 0) && (green == 8'hFF) && (blue == 0)) red <= red - 1;          // Red decrease     --> Yellow to Green
                     else if ((red == 0) && (green == 8'hFF) && (blue < 8'hFF)) blue <= blue + 1;    // Blue increase    --> Green to Aqua
