@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+`include "tmds_encoder.v"
 /* HDMI specifications
  *  Resolutions: 640 x 480
  *  Frame rate: 60Hz
@@ -12,14 +13,14 @@
  *          + Front porch: 10
  *  Total pixel: 800 x 525 = 420kpxl
  *  Clock pixel: 420kpxl x 60Hz = 25.2Mhz
- *  Clock TMDS: 25.2Mhz x 10bit = 252Mhz
+ *  Clock TMDS: 25.2Mhz x 10bit / 2 = 126Mhz
 */
 
 module my_hdmi(
-    input clk_in,                       // 27Mhz, but now this signal is tmds_bit_clk 252Mhz
+    input clk_in,                       // 27Mhz, but for simulation purpose, tmds_bit_clk is 252Mhz
     input rst_in,                       // Reset button
     input btn,                          // Button to change video data signal
-    output reg tmds_clk = 0,            // TMDS pixel clock output 25.2Mhz
+    output tmds_clk,                    // TMDS pixel clock output 25.2Mhz
     output reg [2:0] tmds_out = 0       // TMDS shiftout RGB
 );
     localparam pixel_x          = 640;
@@ -37,19 +38,22 @@ module my_hdmi(
     localparam V_pix_BP         = pixel_y  + V_back_porch    ;                          // 513
     localparam V_pix_BP_RT      = V_pix_BP + V_retrace       ;                          // 515
 
-    /* Pixel clock devider. Generate tmds_clk (or pixel clock) 25.2Mhz
-     * PLL clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
+    /* clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
      * TMDS bit clock / 10 = Pixel clock: 25.2Mhz
+     * @Note: This process is used for simulation, the actual process is executed by PLL block.
     */
-    reg [2:0] cnt_div = 4'd4;      // Counter for clock divider
-    wire tmds_bit_clk = clk_in;  // Change 27Mhz clk_in to tmds_bit_clk for simulation
+    reg [2:0] cnt_div = 4'd4;       // Counter for clock divider
+    wire tmds_bit_clk = clk_in;     // Change 27Mhz clk_in to tmds_bit_clk for simulation
+    /* This process generates pixel clock 25.2Mhz, divided from 252Mhz clk_in */
+    reg pixel_clk = 0;
+    assign tmds_clk = pixel_clk;
     always @(posedge tmds_bit_clk, negedge rst_in) begin
         if (rst_in == 0) begin
-            tmds_clk <= 0;
+            pixel_clk <= 0;
             cnt_div <= 4'd4;
         end
         else if (cnt_div == 3'd4) begin
-            tmds_clk <= ~tmds_clk;
+            pixel_clk <= ~pixel_clk;
             cnt_div <= 0;
         end
         else cnt_div <= cnt_div + 1;
@@ -66,7 +70,7 @@ module my_hdmi(
     reg Vsyn = 0;
     reg DataArea = 0;
     
-    always @(posedge tmds_clk, negedge rst_in) begin // Counter_X, Counter_Y
+    always @(posedge pixel_clk, negedge rst_in) begin // Counter_X, Counter_Y
         if (rst_in == 0) begin
             cnt_x = (total_pixel_x - 1);
             cnt_y = (total_pixel_y - 1);
@@ -110,11 +114,11 @@ module my_hdmi(
     wire [7:0] W = {8{cnt_x[7:0] == cnt_y[7:0]}};
     wire [7:0] A = {8{(cnt_x[7:5] == 3'h2) && (cnt_y[7:5] == 3'h2)}};
 
-    always @(posedge tmds_clk, negedge rst_in) begin
+    always @(posedge pixel_clk, negedge rst_in) begin
         if (rst_in == 0 || btn == 0) cnt_data <= 0;
         else cnt_data <= cnt_data + 1;
     end
-    always @(posedge tmds_clk, negedge rst_in) begin
+    always @(posedge pixel_clk, negedge rst_in) begin
         if(rst_in == 0) begin
             red   <= 8'hFF;
             green <= 0;
@@ -143,4 +147,60 @@ module my_hdmi(
             end
         end
     end
+
+    /* TMDS Encoder */
+    wire [9:0] TMDS_RED, TMDS_GREEN, TMDS_BLUE;
+    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(red),    .q_out(TMDS_RED))   ;
+    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(green),  .q_out(TMDS_GREEN)) ;
+    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD({Vsyn, Hsyn}),   .D(blue),   .q_out(TMDS_BLUE))  ;
+
+    /* Shiftout by OSER10 IPs on Tang Nano 4k */
+    OSER10 shift_red(
+        .Q(tmds_out[2]),
+        .RESET(rst_in),
+        .PCLK(pixclk),
+        .FCLK(tmds_bit_clk),
+        .D0(TMDS_red[0]),
+        .D1(TMDS_red[1]),
+        .D2(TMDS_red[2]),
+        .D3(TMDS_red[3]),
+        .D4(TMDS_red[4]),
+        .D5(TMDS_red[5]),
+        .D6(TMDS_red[6]),
+        .D7(TMDS_red[7]),
+        .D8(TMDS_red[8]),
+        .D9(TMDS_red[9])
+    );
+    OSER10 shift_green(
+        .Q(tmds_out[1]),
+        .RESET(rst_in),
+        .PCLK(pixclk),
+        .FCLK(tmds_bit_clk),
+        .D0(TMDS_green[0]),
+        .D1(TMDS_green[1]),
+        .D2(TMDS_green[2]),
+        .D3(TMDS_green[3]),
+        .D4(TMDS_green[4]),
+        .D5(TMDS_green[5]),
+        .D6(TMDS_green[6]),
+        .D7(TMDS_green[7]),
+        .D8(TMDS_green[8]),
+        .D9(TMDS_green[9])
+    );
+    OSER10 shift_blue(
+        .Q(tmds_out[0]),
+        .RESET(rst_in),
+        .PCLK(pixclk),
+        .FCLK(tmds_bit_clk),
+        .D0(TMDS_blue[0]),
+        .D1(TMDS_blue[1]),
+        .D2(TMDS_blue[2]),
+        .D3(TMDS_blue[3]),
+        .D4(TMDS_blue[4]),
+        .D5(TMDS_blue[5]),
+        .D6(TMDS_blue[6]),
+        .D7(TMDS_blue[7]),
+        .D8(TMDS_blue[8]),
+        .D9(TMDS_blue[9])
+    );
 endmodule
