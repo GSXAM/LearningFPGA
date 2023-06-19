@@ -18,4 +18,5 @@
 14/06/2023  Add data block, tested with result: data change fast. Increasing counter size from 7bit to 22bit, but untested. THACO 14/6/2023
             Completed data block. The counter data size is 17-bit and tested. KTX Quang Nam 14/6/2023
 18/06/2023  Change TMDS clock from 252Mhz to 126Mhz. Using DDR output to x2 clock speed on Tang Nano 4k. KTX Quang Nam 18/6/2023
-            
+19/06/2023  Add comments clock part, add TMDS encoder, add OSER10 shitout. THACO by laptopPC 19/6/2023
+            Fix bug, download code to Tang Nano 4k --> Success testing my HDMI. THACO by laptopPC 19/6/2023

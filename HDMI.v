@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "tmds_encoder.v"
+// `include "tmds_encoder.v"
 /* HDMI specifications
  *  Resolutions: 640 x 480
  *  Frame rate: 60Hz
@@ -21,7 +21,7 @@ module my_hdmi(
     input rst_in,                       // Reset button
     input btn,                          // Button to change video data signal
     output tmds_clk,                    // TMDS pixel clock output 25.2Mhz
-    output reg [2:0] tmds_out = 0       // TMDS shiftout RGB
+    output [2:0] tmds_out       // TMDS shiftout RGB
 );
     localparam pixel_x          = 640;
     localparam pixel_y          = 480;
@@ -38,53 +38,45 @@ module my_hdmi(
     localparam V_pix_BP         = pixel_y  + V_back_porch    ;                          // 513
     localparam V_pix_BP_RT      = V_pix_BP + V_retrace       ;                          // 515
 
-    /* clk_in: 27Mhz ==> TMDS bit clock: 252Mhz
-     * TMDS bit clock / 10 = Pixel clock: 25.2Mhz
-     * @Note: This process is used for simulation, the actual process is executed by PLL block.
-    */
-    reg [2:0] cnt_div = 4'd4;       // Counter for clock divider
-    wire tmds_bit_clk = clk_in;     // Change 27Mhz clk_in to tmds_bit_clk for simulation
-    /* This process generates pixel clock 25.2Mhz, divided from 252Mhz clk_in */
-    reg pixel_clk = 0;
+    /* Clock source */
+    wire tmds_bit_clk, pixel_clk;
     assign tmds_clk = pixel_clk;
-    always @(posedge tmds_bit_clk, negedge rst_in) begin
-        if (rst_in == 0) begin
-            pixel_clk <= 0;
-            cnt_div <= 4'd4;
-        end
-        else if (cnt_div == 3'd4) begin
-            pixel_clk <= ~pixel_clk;
-            cnt_div <= 0;
-        end
-        else cnt_div <= cnt_div + 1;
-    end
+    PLLVR_126Mhz clock_126(
+        .clkout(tmds_bit_clk), //output clkout
+        .clkin(clk_in) //input clkin
+    );
+    CLKDIV_25Mhz clock_25(
+        .clkout(pixel_clk), //output clkout
+        .hclkin(tmds_bit_clk), //input hclkin
+        .resetn(rst_in) //input resetn
+    );
 
     /* Create Hsyn, Vsyn and DataArea
      *      + Create Counter_X for sweep horizon
      *      + Create Counter_Y for sweep veritcal
      * Create Hsyn, Vsyn and DataArea signal
     */
-    reg [9:0] cnt_x = 0;
-    reg [9:0] cnt_y = 0;
+    reg [9:0] cnt_x;
+    reg [9:0] cnt_y;
     reg Hsyn = 0;
     reg Vsyn = 0;
     reg DataArea = 0;
     
     always @(posedge pixel_clk, negedge rst_in) begin // Counter_X, Counter_Y
         if (rst_in == 0) begin
-            cnt_x = (total_pixel_x - 1);
-            cnt_y = (total_pixel_y - 1);
+            cnt_x <= (total_pixel_x - 1);
+            cnt_y <= (total_pixel_y - 1);
             Hsyn <= 0;
             Vsyn <= 0;
             DataArea <= 0;
         end
         else begin
             /* Counter X */
-            if (cnt_x == (total_pixel_x - 1)) cnt_x = 0;
-            else cnt_x = cnt_x + 1;
+            if (cnt_x == (total_pixel_x - 1)) cnt_x <= 0;
+            else cnt_x <= cnt_x + 1;
 
             /* Counter Y */
-            if (cnt_y == (total_pixel_y - 1)) cnt_y = 0;
+            if (cnt_y == (total_pixel_y - 1)) cnt_y <= 0;
             else if (cnt_x == (total_pixel_x - 1)) cnt_y <= cnt_y + 1;
 
             /* Hsyn */
@@ -150,57 +142,65 @@ module my_hdmi(
 
     /* TMDS Encoder */
     wire [9:0] TMDS_RED, TMDS_GREEN, TMDS_BLUE;
-    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(red),    .q_out(TMDS_RED))   ;
-    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(green),  .q_out(TMDS_GREEN)) ;
-    my_tmds_encoder TMDS_encode_RED(.clk(pixclk), .rst(rst_in), .DE(DataArea), .CD({Vsyn, Hsyn}),   .D(blue),   .q_out(TMDS_BLUE))  ;
+    my_tmds_encoder TMDS_encode_RED     (.clk(pixel_clk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(red),    .q_out(TMDS_RED))   ;
+    my_tmds_encoder TMDS_encode_GREEN   (.clk(pixel_clk), .rst(rst_in), .DE(DataArea), .CD(2'b00),          .D(green),  .q_out(TMDS_GREEN)) ;
+    my_tmds_encoder TMDS_encode_BLUE    (.clk(pixel_clk), .rst(rst_in), .DE(DataArea), .CD({Vsyn, Hsyn}),   .D(blue),   .q_out(TMDS_BLUE))  ;
 
     /* Shiftout by OSER10 IPs on Tang Nano 4k */
     OSER10 shift_red(
         .Q(tmds_out[2]),
-        .RESET(rst_in),
-        .PCLK(pixclk),
+        .RESET(~rst_in),
+        .PCLK(pixel_clk),
         .FCLK(tmds_bit_clk),
-        .D0(TMDS_red[0]),
-        .D1(TMDS_red[1]),
-        .D2(TMDS_red[2]),
-        .D3(TMDS_red[3]),
-        .D4(TMDS_red[4]),
-        .D5(TMDS_red[5]),
-        .D6(TMDS_red[6]),
-        .D7(TMDS_red[7]),
-        .D8(TMDS_red[8]),
-        .D9(TMDS_red[9])
+        .D0(TMDS_RED[0]),
+        .D1(TMDS_RED[1]),
+        .D2(TMDS_RED[2]),
+        .D3(TMDS_RED[3]),
+        .D4(TMDS_RED[4]),
+        .D5(TMDS_RED[5]),
+        .D6(TMDS_RED[6]),
+        .D7(TMDS_RED[7]),
+        .D8(TMDS_RED[8]),
+        .D9(TMDS_RED[9])
     );
+    defparam shift_red.GSREN="false";
+    defparam shift_red.LSREN="true";
+
     OSER10 shift_green(
         .Q(tmds_out[1]),
-        .RESET(rst_in),
-        .PCLK(pixclk),
+        .RESET(~rst_in),
+        .PCLK(pixel_clk),
         .FCLK(tmds_bit_clk),
-        .D0(TMDS_green[0]),
-        .D1(TMDS_green[1]),
-        .D2(TMDS_green[2]),
-        .D3(TMDS_green[3]),
-        .D4(TMDS_green[4]),
-        .D5(TMDS_green[5]),
-        .D6(TMDS_green[6]),
-        .D7(TMDS_green[7]),
-        .D8(TMDS_green[8]),
-        .D9(TMDS_green[9])
+        .D0(TMDS_GREEN[0]),
+        .D1(TMDS_GREEN[1]),
+        .D2(TMDS_GREEN[2]),
+        .D3(TMDS_GREEN[3]),
+        .D4(TMDS_GREEN[4]),
+        .D5(TMDS_GREEN[5]),
+        .D6(TMDS_GREEN[6]),
+        .D7(TMDS_GREEN[7]),
+        .D8(TMDS_GREEN[8]),
+        .D9(TMDS_GREEN[9])
     );
+    defparam shift_green.GSREN="false";
+    defparam shift_green.LSREN="true";
+
     OSER10 shift_blue(
         .Q(tmds_out[0]),
-        .RESET(rst_in),
-        .PCLK(pixclk),
+        .RESET(~rst_in),
+        .PCLK(pixel_clk),
         .FCLK(tmds_bit_clk),
-        .D0(TMDS_blue[0]),
-        .D1(TMDS_blue[1]),
-        .D2(TMDS_blue[2]),
-        .D3(TMDS_blue[3]),
-        .D4(TMDS_blue[4]),
-        .D5(TMDS_blue[5]),
-        .D6(TMDS_blue[6]),
-        .D7(TMDS_blue[7]),
-        .D8(TMDS_blue[8]),
-        .D9(TMDS_blue[9])
+        .D0(TMDS_BLUE[0]),
+        .D1(TMDS_BLUE[1]),
+        .D2(TMDS_BLUE[2]),
+        .D3(TMDS_BLUE[3]),
+        .D4(TMDS_BLUE[4]),
+        .D5(TMDS_BLUE[5]),
+        .D6(TMDS_BLUE[6]),
+        .D7(TMDS_BLUE[7]),
+        .D8(TMDS_BLUE[8]),
+        .D9(TMDS_BLUE[9])
     );
+    defparam shift_blue.GSREN="false";
+    defparam shift_blue.LSREN="true";
 endmodule
