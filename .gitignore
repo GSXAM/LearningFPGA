@@ -1,0 +1,5 @@
+run.vvp
+dumpwave.vcd
+test*
+temp*
+.log
