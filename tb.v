@@ -1,8 +1,11 @@
 `timescale 1ns/1ps
 `include "clk_div_even.v"
+`include "clk_div_odd.v"
+
 `define clk_div_even
 // `define clk_div_odd
 // `define clk_div_top
+
 module tb (
     // ports
 );
