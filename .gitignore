@@ -1,5 +1,5 @@
-run.vvp
-dumpwave.vcd
-test*
+*.vvp
+*.vcd
+*test*
 temp*
 .log

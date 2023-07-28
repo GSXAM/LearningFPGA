@@ -1,5 +1,8 @@
 `timescale 1ns/1ps
 `include "clk_div_even.v"
+`define clk_div_even
+// `define clk_div_odd
+// `define clk_div_top
 module tb (
     // ports
 );
@@ -7,7 +10,15 @@ module tb (
     reg [15:0] divisor;
     wire clkout;
 
+
+`ifdef clk_div_even
     clk_div_even UUT(.clkin(clk), .reset(reset), .en(en), .divisor(divisor), .clkout(clkout));
+`elsif clk_div_odd
+    clk_div_odd UUT(.clkin(clk), .reset(reset), .en(en), .divisor(divisor), .clkout(clkout));
+`else
+    clk_div_top UUT(.clkin(clk), .reset(reset), .en(en), .divisor(divisor), .clkout(clkout));
+`endif
+
 
     always begin
         #1 clk <= !clk;
