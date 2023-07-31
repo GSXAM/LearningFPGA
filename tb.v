@@ -18,9 +18,10 @@ module tb (
         $dumpvars(0, tb);
         clk = 0;
         reset = 1;          // No reset
-        divisor = 16'd10 - 16'd1;
-        #19 reset = 0;      // reset
+        divisor = 16'd6 - 16'd1;    // clkin/6: even
+        #18.5 reset = 0;      // reset
         #30 reset = 1;
+        #100 divisor = 16'd5 - 16'd1;   // clkin/9: odd
         #200 $finish;
     end
 endmodule

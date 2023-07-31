@@ -13,14 +13,14 @@ module clk_div_top (
             cnt <= 0;
         end
         else begin
-            if (!divisor[0]) begin     // divisor must be minused by 1. Then divisor[0] = 0 is odd and divisor[0] = 1 is even
-                cnt <= cnt + 1;
+            if (!divisor[0]) begin      // divisor must be minused by 1. Then divisor[0] = 0 is odd and divisor[0] = 1 is even
+                cnt <= cnt + 1;         // increasing cnt at both posedge and negedge
             end
-            else begin  // increasing cnt at only posedge clkin
-                cnt <= clkin ? (cnt + 1) : cnt;
+            else begin
+                cnt <= clkin ? (cnt + 1) : cnt;     // increasing cnt at only posedge
             end
 
-            if (((cnt == divisor) && (!divisor[0])) || ((cnt == half_divisor) && divisor[0])) begin
+            if (((cnt == divisor) && !divisor[0] /*&& ~clkin*/) || ((cnt == half_divisor) && divisor[0] && clkin)) begin
                 cnt <= 0;
                 clkout <= ~clkout;
             end
