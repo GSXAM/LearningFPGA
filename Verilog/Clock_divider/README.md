@@ -1,15 +1,10 @@
 # Clock divider for both odd and even divisor
-- [Clock divider for both odd and even divisor](#clock-divider-for-both-odd-and-even-divisor)
-  - [Block diagram](#block-diagram)
-  - [Clock divider with even divisor](#clock-divider-with-even-divisor)
-  - [Clock divider with odd divisor](#clock-divider-with-odd-divisor)
-  - [Intergrated model](#intergrated-model)
 
-
-## Block diagram
-
-## Clock divider with even divisor
-
-## Clock divider with odd divisor
-
-## Intergrated model
+- Divisor range: 1 to 65535 (16-bit counter register).
+- Reset stage:
+  - counter register:  **cnt** = 0x0000
+  - output: **clkout** = 0
+- Counter register counts up at both positive and negative edge of clock input **clkin**, followed by odd or even **divisor** input.
+---------
+Block diagram:
+![clock-divider-diagram](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Clock_divider/clock-divider-diagram.svg)
