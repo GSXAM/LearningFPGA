@@ -1,0 +1,87 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.1 (win64) Build 2902540 Wed May 27 19:54:49 MDT 2020
+| Date         : Mon May  2 22:47:21 2022
+| Host         : GSXAMPC running 64-bit major release  (build 9200)
+| Command      : report_methodology -file ALU_4bit_methodology_drc_routed.rpt -pb ALU_4bit_methodology_drc_routed.pb -rpx ALU_4bit_methodology_drc_routed.rpx
+| Design       : ALU_4bit
+| Device       : xc7a35tcpg236-1
+| Speed File   : -1
+| Design State : Fully Routed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report Methodology
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: design_1
+      Design limits: <entire design considered>
+             Max violations: <unlimited>
+             Violations found: 9
++-----------+------------------+------------------------------+------------+
+| Rule      | Severity         | Description                  | Violations |
++-----------+------------------+------------------------------+------------+
+| TIMING-17 | Critical Warning | Non-clocked sequential cell  | 2          |
+| LUTAR-1   | Warning          | LUT drives async reset alert | 1          |
+| TIMING-20 | Warning          | Non-clocked latch            | 6          |
++-----------+------------------+------------------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+TIMING-17#1 Critical Warning
+Non-clocked sequential cell  
+The clock pin Display_sweep_LED_7seg/count_reg[0]/C is not reached by a timing clock
+Related violations: <none>
+
+TIMING-17#2 Critical Warning
+Non-clocked sequential cell  
+The clock pin Display_sweep_LED_7seg/count_reg[1]/C is not reached by a timing clock
+Related violations: <none>
+
+LUTAR-1#1 Warning
+LUT drives async reset alert  
+LUT cell Display_sweep_LED_7seg/DataLED7seg_reg[2][3]_i_3, with 2 or more inputs, drives asynchronous preset/clear pin(s) Display_sweep_LED_7seg/DataLED7seg_reg[2][2]/CLR,
+Display_sweep_LED_7seg/DataLED7seg_reg[2][0]/PRE,
+Display_sweep_LED_7seg/DataLED7seg_reg[2][1]/PRE,
+Display_sweep_LED_7seg/DataLED7seg_reg[2][3]/PRE,
+Display_sweep_LED_7seg/DataLED7seg_reg[3][0]/PRE,
+Display_sweep_LED_7seg/DataLED7seg_reg[3][3]/PRE. The LUT may glitch and trigger an unexpected reset, even if it is a properly timed path.
+Related violations: <none>
+
+TIMING-20#1 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[2][0] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[2][0]/G is not reached by a timing clock
+Related violations: <none>
+
+TIMING-20#2 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[2][1] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[2][1]/G is not reached by a timing clock
+Related violations: <none>
+
+TIMING-20#3 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[2][2] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[2][2]/G is not reached by a timing clock
+Related violations: <none>
+
+TIMING-20#4 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[2][3] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[2][3]/G is not reached by a timing clock
+Related violations: <none>
+
+TIMING-20#5 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[3][0] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[3][0]/G is not reached by a timing clock
+Related violations: <none>
+
+TIMING-20#6 Warning
+Non-clocked latch  
+The latch Display_sweep_LED_7seg/DataLED7seg_reg[3][3] cannot be properly analyzed as its control pin Display_sweep_LED_7seg/DataLED7seg_reg[3][3]/G is not reached by a timing clock
+Related violations: <none>
+
+

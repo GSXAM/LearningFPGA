@@ -1,0 +1,10 @@
+0.7
+2020.1
+May 27 2020
+20:09:33
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sim_1/new/tb_Counter0to9.vhd,1653399526,vhdl,,,,tb_counter0to9,,,,,,,,
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Clock_divider_1Hz.vhd,1653402256,vhdl,,,,clock_divider_100mhz_to_1hz,,,,,,,,
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Counter100_updown.vhd,1653401448,vhdl,,,,counter100_updown,,,,,,,,
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Counter10_updown.vhd,1653234817,vhdl,,,,counter10_updown,,,,,,,,
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Hex2led.vhd,1653375082,vhdl,,,,hex2seg,,,,,,,,
+D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/clock_divider_50Hz.vhd,1653402245,vhdl,,,,clock_divider_50hz,,,,,,,,

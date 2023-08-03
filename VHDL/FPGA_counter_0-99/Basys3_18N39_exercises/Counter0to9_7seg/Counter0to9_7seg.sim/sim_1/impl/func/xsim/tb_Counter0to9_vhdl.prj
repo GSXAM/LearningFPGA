@@ -1,0 +1,7 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"tb_Counter0to9_func_impl.vhd" \
+"../../../../../Counter0to9_7seg.srcs/sim_1/new/tb_Counter0to9.vhd" \
+
+# Do not sort compile order
+nosort

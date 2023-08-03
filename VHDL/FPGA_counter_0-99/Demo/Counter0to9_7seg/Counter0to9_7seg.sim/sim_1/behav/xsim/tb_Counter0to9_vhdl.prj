@@ -1,0 +1,11 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../Counter0to9_7seg.srcs/sources_1/new/Clock_divider_1Hz.vhd" \
+"../../../../Counter0to9_7seg.srcs/sources_1/new/Counter100_updown.vhd" \
+"../../../../Counter0to9_7seg.srcs/sources_1/new/Counter10_updown.vhd" \
+"../../../../Counter0to9_7seg.srcs/sources_1/new/Hex2led.vhd" \
+"../../../../Counter0to9_7seg.srcs/sources_1/new/clock_divider_50Hz.vhd" \
+"../../../../Counter0to9_7seg.srcs/sim_1/new/tb_Counter0to9.vhd" \
+
+# Do not sort compile order
+nosort

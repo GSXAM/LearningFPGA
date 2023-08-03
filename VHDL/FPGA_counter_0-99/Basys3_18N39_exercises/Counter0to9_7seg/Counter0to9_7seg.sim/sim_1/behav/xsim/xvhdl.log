@@ -1,0 +1,6 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Clock_divider_1Hz.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'clock_divider_100MHz_to_1Hz'
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/Counter100_updown.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'Counter100_updown'
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/VHDL/Basys3_18N39/Counter0to9_7seg/Counter0to9_7seg.srcs/sources_1/new/clock_divider_50Hz.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'clock_divider_50Hz'
