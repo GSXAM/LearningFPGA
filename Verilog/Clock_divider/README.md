@@ -7,4 +7,4 @@
 - Counter register counts up at both positive and negative edge of clock input **clkin**, followed by odd or even **divisor** input.
 ---------
 Block diagram:
-![clock-divider-diagram](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Clock_divider/clock-divider-diagram.svg)
+![clock-divider-diagram](https://github.com/GSXAM/LearningFPGA/blob/master/images/clock-divider-diagram.svg)

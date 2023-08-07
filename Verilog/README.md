@@ -6,6 +6,7 @@
   - [Decoder 4 to 16 one-hot](#decoder-4-to-16-one-hot)
   - [HDMI transmitter](#hdmi-transmitter)
   - [Clock divider](#clock-divider)
+  - [Fast Adder/Subtractor 32-bit](#fast-addersubtractor-32-bit)
 
 ## NAND gate
 - NAND gate for simulation testing.
@@ -23,3 +24,5 @@
 - Using DDR output buffer and run on Tang nano 4k FPGA board
 ## Clock divider
 - Clock divider 16-bit for both odd and even
+## Fast Adder/Subtractor 32-bit
+- Fast adder/subtractor 32-bit using Carry look ahead adder

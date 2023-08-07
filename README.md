@@ -1,1 +1,12 @@
 # Learning FPGA
+- [Verilog](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog)
+  - [Adder/Subtractor](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Adder_Subtractor)
+  - [Clock divider](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Clock_divider)
+  - [Decoder 4 to 16 one-hot](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Decoder_4to16_onehot)
+  - [Encoder 8 to 3](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Encoder_8to3)
+  - [HDMI](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/HDMI)
+  - [Hex to 7-segments](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/Hexto7seg)
+  - [NAND gate](https://github.com/GSXAM/LearningFPGA/tree/master/Verilog/NAND_gate)
+- [VHDL](https://github.com/GSXAM/LearningFPGA/tree/master/VHDL)
+  - [Counter 0 to 99](https://github.com/GSXAM/LearningFPGA/tree/master/VHDL/FPGA_counter_0-99)
+  - [VHDL exercise sources](https://github.com/GSXAM/LearningFPGA/tree/master/VHDL/Sources)
