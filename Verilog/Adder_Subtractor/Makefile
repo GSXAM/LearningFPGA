@@ -1,17 +1,14 @@
 clean:
 	cls
 	del /s run.vvp dumwave.vcd runtest.vvp dumptest.vcd
-
-conpile:
+compile:
 	iverilog -o run.vvp tb.v
-
-run: conpile
+run:
 	vvp run.vvp
-
-runall: run
+openwave:
 	gtkwave dumpwave.vcd
-
-runtest: clean
+runtest:
 	iverilog -o runtest.vvp tb_test.v
 	vvp runtest.vvp
+wavetest:
 	gtkwave dumptest.vcd
