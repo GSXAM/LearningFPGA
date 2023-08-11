@@ -1,6 +1,6 @@
 clean:
 	cls
-	del /s run.vvp dumwave.vcd runtest.vvp dumptest.vcd
+	del /s run.vvp dumpwave.vcd runtest.vvp dumptest.vcd
 compile:
 	iverilog -o run.vvp tb.v
 run:
