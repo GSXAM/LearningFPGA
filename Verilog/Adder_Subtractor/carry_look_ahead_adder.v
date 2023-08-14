@@ -7,8 +7,8 @@ module CLA (
     output [4:0] Co
 );
     assign Co[0] = Select;
-    assign Co[1] = g[0] | (p[0]&Co[0]);
-    assign Co[2] = g[1] | (p[1]&g[0]) | (p[0]&p[1]&Co[0]);
-    assign Co[3] = g[2] | (p[2]&g[1]) | (p[1]&p[2]&g[0]) | (p[0]&p[1]&p[2]&Co[0]);
-    assign Co[4] = g[3] | (p[3]&g[2]) | (p[2]&p[3]&g[1]) | (p[1]&p[2]&p[3]&g[0]) | (p[0]&p[1]&p[2]&p[3]&Co[0]);
+    assign #2 Co[1] = g[0] | (p[0]&Co[0]);
+    assign #2 Co[2] = g[1] | (p[1]&g[0]) | (p[0]&p[1]&Co[0]);
+    assign #2 Co[3] = g[2] | (p[2]&g[1]) | (p[1]&p[2]&g[0]) | (p[0]&p[1]&p[2]&Co[0]);
+    assign #2 Co[4] = g[3] | (p[3]&g[2]) | (p[2]&p[3]&g[1]) | (p[1]&p[2]&p[3]&g[0]) | (p[0]&p[1]&p[2]&p[3]&Co[0]);
 endmodule

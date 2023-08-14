@@ -37,6 +37,8 @@ module tb_FFA (
     wire CarryOut;
     wire signed [31:0] Sum_test = Select ? A-B : A+B;
 `endif
+    
+    localparam delay = 30;
 /*---------- Declare hierarchy module -----------*/
 `ifdef FA
     full_adder_modified FA_Test(.A(A), .B(B), .Ci(Ci), .Sum(Sum), .g(g), .p(p));
@@ -54,8 +56,8 @@ module tb_FFA (
 `ifdef FA
         $monitor("%t: A=%h, B=%h, Ci=%h\n\tSum=%h, g=%h, p=%h\n", $time, A, B, Ci, Sum, g, p);
         A=0; B=0; Ci=0;
-        #10 A=32'hF23A_08B7; B=32'h9BA2_01EC; Ci=32'h1111_1111;
-        #10;
+        #delay A=32'hF23A_08B7; B=32'h9BA2_01EC; Ci=32'h1111_1111;
+        #delay;
         if (Sum == (A^B^Ci))
             $display("----- Sum PASS -----");
         else
@@ -71,14 +73,14 @@ module tb_FFA (
         else
             $display("----- p FAIL -----");
 
-        #10 $finish;
+        #delay $finish;
 `elsif CLA
         Select=0; g=0; p=0;
-        #1;
+        #delay;
         for (Select=0; Select<2'h2; Select=Select+1) begin
             for (g=0; g<5'h10; g=g+1) begin
                 for (p=0; p<5'h10; p=p+1) begin
-                    #1;
+                    #delay;
                     if (i == Co) begin
                         $display("%t: Select=%h, g=%h, p=%h, Co=%h, i=%h ----- PASS", $time, Select[0], g[3:0], p[3:0], Co, i);
                     end
@@ -90,12 +92,14 @@ module tb_FFA (
                 $display("\n");
             end
         end
+
+        #delay $finish;
 `elsif TOP
         A=0; B=0; Select=0;
-        #1;
+        #delay;
         for (B=32'hFFFF_FFFD; B!=32'h0000_0003; B=B+1) begin
             for (A=32'hFFFF_FFFD; A!=32'h0000_0003; A=A+1) begin
-                #1;
+                #delay;
                 if ((Sum_test == Sum)/* && (Sum_test[32] == CarryOut)*/) begin
                     $display("%t: Select=%h A+B = %d + %d = %d --> Sum=%d, CarryOut=%h ----- PASS",
                             $time, Select, A, B, Sum_test, Sum, CarryOut);
@@ -109,10 +113,10 @@ module tb_FFA (
         end
         $display("\n");
         Select=1;
-        #1;
+        #delay;
         for (B=32'hFFFF_FFFD; B!=32'h0000_0003; B=B+1) begin
             for (A=32'hFFFF_FFFD; A!=32'h0000_0003; A=A+1) begin
-                #1;
+                #delay;
                 if ((Sum_test == Sum) /*&& (Sum_test[32] == CarryOut)*/) begin
                     $display("%t: Select=%h A-B = %d - %d = %d --> Sum=%d, CarryOut=%h ----- PASS",
                             $time, Select, A, B, Sum_test, Sum, CarryOut);
@@ -124,8 +128,11 @@ module tb_FFA (
             end
             $display("\n");
         end
+
+        #delay $finish;
 `else
         $display("No module has found!");
+        #delay $finish;
 `endif
     end
 endmodule

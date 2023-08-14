@@ -15,7 +15,8 @@ module adder_subtractor_top (
     wire [8:0] CLA_Ci;
 
     /*----- XOR gate for B input -----*/
-    wire [31:0] xor_B = B^{32{Select}};
+    wire [31:0] xor_B;
+    assign #1 xor_B = B^{32{Select}};
 
     /*----- Full adder -----*/
     full_adder_modified FA(.A(A), .B(xor_B), .Ci(C), .Sum(Sum), .g(g), .p(p));

@@ -9,7 +9,7 @@ Table of content:
   - [Final block diagram](#final-block-diagram)
 
 ## Description
-This project build a combined 32-bit adder and subtractor, using Carry look ahead adder **(CLA)** circuitry for reducing delay time. CLA produces the intermediate carry in signal immediately instead of waiting for them to be created by the preceding full adder stage.
+This project build a combined 32-bit adder and subtractor, using Carry look ahead adder **(CLA)** circuitry for reducing delay time, and two's complement to convert a positive binary number into negative binary number for subtraction. CLA produces the intermediate carry in signal immediately instead of waiting for them to be created by the preceding full adder stage.
 
 **INPUT**:
 - ***A[31:0]***, ***B[31:0]***: two number 32-bit input
