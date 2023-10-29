@@ -14,10 +14,10 @@ module clk_div_top (
         end
         else begin
             if (!divisor[0]) begin      // divisor must be minused by 1. Then divisor[0] = 0 is odd and divisor[0] = 1 is even
-                cnt <= cnt + 1;         // increasing cnt at both posedge and negedge
+                cnt <= cnt + 1;         // increasing cnt at both posedge and negedge, so value of cnt is equal to frequency
             end
             else begin
-                cnt <= clkin ? (cnt + 1) : cnt;     // increasing cnt at only posedge
+                cnt <= clkin ? (cnt + 1) : cnt;     // increasing cnt at only posedge, so value of cnt is equal to half of frequency
             end
 
             if (((cnt == divisor) && !divisor[0] /*&& ~clkin*/) || ((cnt == half_divisor) && divisor[0] && clkin)) begin
@@ -25,5 +25,9 @@ module clk_div_top (
                 clkout <= ~clkout;
             end
         end
+    end
+
+    always @(divisor) begin
+        cnt <= 0;
     end
 endmodule

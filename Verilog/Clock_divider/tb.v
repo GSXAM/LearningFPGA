@@ -22,6 +22,10 @@ module tb (
         #18.5 reset = 0;      // reset
         #30 reset = 1;
         #100 divisor = 16'd5 - 16'd1;   // clkin/9: odd
+        #100;
+        for (reg [16:0] i = 0; i<10; i=i+1) begin
+            #100 divisor = i;
+        end
         #200 $finish;
     end
 endmodule
